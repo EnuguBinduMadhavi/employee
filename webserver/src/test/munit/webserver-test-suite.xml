@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:munit="http://www.mulesoft.org/schema/mule/munit" xmlns:munit-tools="http://www.mulesoft.org/schema/mule/munit-tools"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xsi:schemaLocation="
+		http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+		http://www.mulesoft.org/schema/mule/munit http://www.mulesoft.org/schema/mule/munit/current/mule-munit.xsd
+		http://www.mulesoft.org/schema/mule/munit-tools  http://www.mulesoft.org/schema/mule/munit-tools/current/mule-munit-tools.xsd">
+	<munit:config name="webserver-test-suite.xml" />
+	<munit:test name="webserver-test-suite-getEmployeeTest" doc:id="15aa8ead-1805-4ab3-a35f-249740c54341" description="Test">
+		<munit:behavior >
+			<munit-tools:mock-when doc:name="Mock when select" doc:id="3032c6cd-232a-48d3-a626-33eb862b0076" processor="db:select">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="0bb11c3f-62d8-47d6-a87a-613245e19a88" attributeName="doc:id" />
+				</munit-tools:with-attributes>
+			</munit-tools:mock-when>
+		</munit:behavior>
+		<munit:execution >
+			<flow-ref doc:name="Flow-ref to getEmployee" doc:id="80445d4c-2cd2-406d-bcf8-adf62527233a" name="getEmployee"/>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:verify-call doc:name="Verify call for logger" doc:id="8a99c60e-283f-4bb1-ba41-be37b369a62d" processor="logger" atLeast="1">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="deb5b561-5ae4-4481-a01e-161c203a5a56" attributeName="doc:id" />
+				</munit-tools:with-attributes>
+			</munit-tools:verify-call>
+		</munit:validation>
+	</munit:test>
+	<munit:test name="webserver-test-suite-getEmployeeByIdTest" doc:id="093c9f44-2191-422f-936d-de06d827709d" description="Test">
+		<munit:behavior >
+			<munit-tools:mock-when doc:name="Mock when select" doc:id="2caeb4e6-9b45-46f6-981d-e256dad2116f" processor="db:select">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="f8444fd7-fbe1-422a-a123-3c74d16f3758" attributeName="doc:id" />
+				</munit-tools:with-attributes>
+
+			</munit-tools:mock-when>
+		</munit:behavior>
+		<munit:execution >
+			<munit:set-event doc:name="Set Event" doc:id="c0b612f0-6009-4438-b985-a72889eac607" >
+				<munit:payload value="id" />
+				<munit:attributes value="#[{'id':'1'}]" />
+			</munit:set-event>
+			<flow-ref doc:name="Flow-ref to getEmployeeById" doc:id="30c67d5e-def7-4774-bfab-da9849812b7e" name="getEmployeeById"/>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:verify-call doc:name="Verify call for logger" doc:id="066da32d-54d9-41b9-a6fd-5ff57bfdea5b" processor="logger" atLeast="1">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="be1101b0-6799-4b1e-8879-1ccae85110e4" attributeName="doc:id" />
+				</munit-tools:with-attributes>
+
+			</munit-tools:verify-call>
+		</munit:validation>
+	</munit:test>
+	<munit:test name="webserver-test-suite-PostEmployeeIdTest" doc:id="0e676017-5a64-4521-8047-b4042a7e1433" description="Test">
+		<munit:behavior >
+			<munit-tools:mock-when doc:name="Mock when select" doc:id="fc9cd8ac-31ca-487c-8f48-12157716a03e" processor="db:insert">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="42a5d989-f081-41e7-bdf2-07fc6efd7587" attributeName="doc:id" />
+				</munit-tools:with-attributes>
+
+
+			</munit-tools:mock-when>
+		</munit:behavior>
+		<munit:execution >
+			<flow-ref doc:name="Flow-ref to PostEmployeeId" doc:id="34393878-76e3-4e58-86b6-89805ff5a141" name="PostEmployeeId"/>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:verify-call doc:name="Verify call for logger" doc:id="3594e0c6-7918-40f6-b24c-6dba0abf1afc" processor="logger" atLeast="1">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="526700c2-3a0c-4ebb-8bba-bc0d48dc02e8" attributeName="doc:id" />
+				</munit-tools:with-attributes>
+
+
+			</munit-tools:verify-call>
+		</munit:validation>
+	</munit:test>
+
+</mule>

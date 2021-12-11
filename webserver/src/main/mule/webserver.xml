@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:db="http://www.mulesoft.org/schema/mule/db" xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
+	xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd
+http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/current/mule-db.xsd">
+	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="2868ca54-c858-4db0-8597-5178db6ed171" >
+		<http:listener-connection host="0.0.0.0" port="${http.port}" />
+	</http:listener-config>
+	<db:config name="Database_Config" doc:name="Database Config" doc:id="0b926a1a-afae-4b77-97a9-4d57e0607dcf" >
+		<db:my-sql-connection host="${dbonline.host}" port="${dbonline.port}" user="${dbonline.username}" password="${dbonline.password}" database="${dbonline.database}" />
+	</db:config>
+	<flow name="getEmployee" doc:id="775c7477-eb5f-409c-9556-7ac05c650451" >
+		<http:listener doc:name="Listener" doc:id="66c7a8dd-ccbe-4fd0-ad53-849284282b56" config-ref="HTTP_Listener_config" path="/employee"/>
+		<db:select doc:name="Select" doc:id="0bb11c3f-62d8-47d6-a87a-613245e19a88" config-ref="Database_Config">
+			<db:sql ><![CDATA[select * from btsinfo]]></db:sql>
+		</db:select>
+		<ee:transform doc:name="Transform Message" doc:id="b8ed58a4-fd45-4535-9687-a68b199629cf" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<logger level="INFO" doc:name="Logger" doc:id="deb5b561-5ae4-4481-a01e-161c203a5a56" message='"message": "flow is completed successfully"'/>
+	</flow>
+	<flow name="getEmployeeById" doc:id="8f1f5105-a854-49ba-b963-2c310e47409a" >
+		<http:listener doc:name="Listener" doc:id="4828d1e5-7b8e-45ee-8d43-281f5d821160" config-ref="HTTP_Listener_config" path="/employee/{id}" />
+		<set-variable value="#[attributes.uriParams.id]" doc:name="id" doc:id="181963bf-125d-4b1c-ba32-b9bf2bab8834" variableName="id"/>
+		<db:select doc:name="Select" doc:id="f8444fd7-fbe1-422a-a123-3c74d16f3758" config-ref="Database_Config" >
+			<db:sql ><![CDATA[select * from btsinfo where id=:id]]></db:sql>
+			<db:input-parameters ><![CDATA[#[{"id": vars.id}]]]></db:input-parameters>
+		</db:select>
+		<ee:transform doc:name="Transform Message" doc:id="d47db60b-2e03-44bb-bff8-bbf9db70f81a" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<logger level="INFO" doc:name="Logger" doc:id="be1101b0-6799-4b1e-8879-1ccae85110e4" message='"message": "flow is completed successfully"' />
+	</flow>
+	<flow name="PostEmployeeId" doc:id="5d81634e-0ccf-4aa7-bdc3-3df6d33d7fc8" >
+		<http:listener doc:name="Listener" doc:id="b65aad6b-0545-42ad-a54c-f7400e39ca13" config-ref="HTTP_Listener_config" path="/employee" allowedMethods="POST"/>
+		<db:insert doc:name="Insert" doc:id="42a5d989-f081-41e7-bdf2-07fc6efd7587" config-ref="Database_Config">
+			<db:sql ><![CDATA[insert into btsinfo values (:id, :name, :salary)]]></db:sql>
+			<db:input-parameters ><![CDATA[#[{"id":payload.id, "name":payload.name, "salary":payload.salary
+}]]]></db:input-parameters>
+		</db:insert>
+		<ee:transform doc:name="Transform Message" doc:id="41216447-9af8-4bf9-ba8a-ef902192d097" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	"message": "Data is inserted"
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<logger level="INFO" doc:name="Logger" doc:id="526700c2-3a0c-4ebb-8bba-bc0d48dc02e8" />
+	</flow>
+</mule>
